@@ -2,11 +2,14 @@
 Plays a single game of Tic-Tac-Toe
 Computer does not have any reasoning, just random
 only plays once, repeat issue found with fgets
+BUGS:
+- fgets() is skipped when played again
 
 TO DO:
 - Add replayability
-- Clean up UI
-- Add heuristic algo to computer moves*/
+- Make better UI
+- Add heuristic algo to computer moves
+*/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -20,6 +23,7 @@ void computer_turn(char * grid);
 void player_turn(char * grid, char * playerName);
 void game_end(char winState, char * playerName);
 void print_title();
+void get_input(char * input, int maxLength);
 
 int main()
 {
@@ -86,11 +90,8 @@ void print_grid(char * tGrid)
 void get_name(char * namePoint)
 /*takes inout for player name*/
 {
-
   printf("\n <Player Name>: ");
-  fgets(namePoint, 50, stdin);
-  /*removes newline or carriage return if there is one*/
-  namePoint[strcspn(namePoint, "\r\n")] = 0;
+  get_input(namePoint, 50);
   printf(" <Computer> \"%s is it? I'll keep that in mind when you lose.\"\n", namePoint);
 }
 
@@ -185,7 +186,10 @@ void player_turn(char * grid, char * playerName)
   while(1)
   {
     printf(" <Computer> \"Pick your space, %s\": ", playerName);
-    scanf("%d", &i);
+    char * tempS = malloc(20);
+    get_input(tempS, 10);
+    i = tempS[0] - '0';
+    free(tempS);
     i--;
     if (grid[i] != '-')
     {
@@ -233,4 +237,20 @@ void print_title()
   printf("#====================================================================#\n");
   printf("#                         Made by:  Xanosite                         #\n");
   printf("######################################################################\n");
+}
+
+void get_input(char * input, int maxLength)
+/* Gets input from console */
+{
+  int c;
+  fgets(input, maxLength, stdin);
+  c = strlen(input);
+  /* finds and replaces newline with null */
+  input[strcspn(input, "\r\n")] = 0;
+  /* if input exceeds max length, erase remaining input
+     console input requires ENTER, so if not found, input was too long */
+  if (c == strlen(input))
+  {
+    while ((c = getchar()) != '\n' && c != EOF);
+  }
 }
