@@ -6,7 +6,7 @@ only plays once, repeat issue found with fgets
 TO DO:
 - Add replayability
 - Clean up UI
-- Add heuristic algo to computer emoves*/
+- Add heuristic algo to computer moves*/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
