@@ -1,3 +1,12 @@
+/*
+Plays a single game of Tic-Tac-Toe
+Computer does not have any reasoning, just random
+only plays once, repeat issue found with fgets
+
+TO DO:
+- Add replayability
+- Clean up UI
+- Add heuristic algo to computer emoves*/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
