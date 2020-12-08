@@ -1,36 +1,38 @@
 /*
-Plays a single game of Tic-Tac-Toe
-Computer does not have any reasoning, just random
+Plays a game of Tic-Tac-Toe
 
 BUGS:
 
-
 TO DO:
+- add comments explaining robo brain and subs
 - Make better UI
-- Add heuristic algo to computer moves
+- Clean
 */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
 
-void print_grid(char * tGrid);
-void get_name(char * playerName);
-char check_win(char * grid);
-char turn_changer(char * lastTurn);
-void computer_turn(char * grid);
-void player_turn(char * grid, char * playerName);
-void game_end(char winState, char * playerName);
-void print_title();
-void get_input(char * input, int maxLength);
-void game_engine(char * playerName);
-int replay();
-void init(char * playerName);
-
+static void print_grid(char * tGrid);
+static void get_name(char * playerName);
+static char check_win(char * grid);
+static char turn_changer(char * lastTurn);
+static void computer_turn(char * grid);
+static void player_turn(char * grid, char * playerName);
+static void game_end(char winState, char * playerName);
+static void print_title();
+static void get_console_input(char * input, int maxLength);
+static void game_engine(char * playerName);
+static int replay();
+static char check_two_h(char * grid, char player);
+static char check_two_v(char * grid, char player);
+static char check_two_d(char * grid, char player);
+static char robo_brain(char * grid);
 int main()
 {
   char * playerName = malloc(60);
-  init(playerName);
+  print_title();
+  get_name(playerName);
   do
   {
     game_engine(playerName);
@@ -39,7 +41,7 @@ int main()
   return 0;
 }
 
-void game_engine(char * playerName)
+static void game_engine(char * playerName)
 /* runs the actual ggame */
 {
   char * grid = malloc(15);
@@ -74,7 +76,7 @@ void game_engine(char * playerName)
   free(grid);
 }
 
-void print_grid(char * tGrid)
+static void print_grid(char * tGrid)
 /*prints the play grid to console*/
 {
   printf("\n#########################################\n\n");
@@ -98,15 +100,15 @@ void print_grid(char * tGrid)
   printf("#########################################\n");
 }
 
-void get_name(char * playerName)
+static void get_name(char * playerName)
 /*takes inout for player name*/
 {
   printf("\n <Player Name>: ");
-  get_input(playerName, 50);
+  get_console_input(playerName, 50);
   printf(" <Computer> \"%s is it? I'll keep that in mind when you lose.\"\n", playerName);
 }
 
-char check_win(char * grid)
+static char check_win(char * grid)
 /*Returns winning character if there is one, else returns 0 for continue, 1 for stalemate*/
 {
   /*horizontal or vertical win state check*/
@@ -146,7 +148,7 @@ char check_win(char * grid)
   return 1;
 }
 
-char turn_changer(char * lastTurn)
+static char turn_changer(char * lastTurn)
 /*if last turn is 2 (no one) randomly decides whos turn it is
   otherwise, determines who's turn it is now
   1 = Computer
@@ -173,10 +175,11 @@ char turn_changer(char * lastTurn)
   }
 }
 
-void computer_turn(char * grid)
+static void computer_turn(char * grid)
 /*picks a random spot to mark...for now*/
 {
-  int i;
+  char test;
+  /*int i;
   while(1)
   {
     i = rand() % 9;
@@ -186,10 +189,13 @@ void computer_turn(char * grid)
       printf("\n <Computer> \"I picked %d, your turn.\"\n", i+1);
       break;
     }
-  }
+  }*/
+  test = robo_brain(grid);
+  printf("%d\n", test);
+  grid[test] = 'O';
 }
 
-void player_turn(char * grid, char * playerName)
+static void player_turn(char * grid, char * playerName)
 /* get input from player as to where they want to place the marl */
 /* berate them for fucking it up */
 {
@@ -198,7 +204,7 @@ void player_turn(char * grid, char * playerName)
   {
     printf(" <Computer> \"Pick your space, %s\": ", playerName);
     char * tempS = malloc(20);
-    get_input(tempS, 10);
+    get_console_input(tempS, 10);
     i = tempS[0] - '0';
     free(tempS);
     i--;
@@ -226,31 +232,31 @@ void player_turn(char * grid, char * playerName)
   }
 }
 
-void game_end(char winState, char *  playerName)
+static void game_end(char winState, char *  playerName)
 {
   if (winState == 1)
   {
-    printf(" <Computer> \"You have no more moves %s!\"\n", playerName);
+    printf(" <Computer> \"It's a draw, well played %s!\"\n", playerName);
   }
   else if (winState == 'X')
   {
-    printf(" <Computer> \"You win this time, %s\"\n", playerName);
+    printf(" <Computer> \"You win this time, %s!\"\n", playerName);
   }
   else
   {
-    printf(" <Computer> \"I won this game %s\"\n", playerName);
+    printf(" <Computer> \"I won this game %s!\"\n", playerName);
   }
   printf(" <Computer> \"Will I beat you next time?\"\n");
 }
 
-void print_title()
+static void print_title()
 {
   printf("######################################################################\n");
   printf("#  _______  _             _______                 _______            #\n");
   printf("# |__   __|(_)           |__   __|               |__   __|           #\n");
   printf("#    | |    _   ___  ______ | |  __ _   ___  ______ | |  ___    ___  #\n");
   printf("#    | |   | | / __||______|| | / _` | / __||______|| | / _ \\  / _ \\ #\n");
-  printf("#    | |   | || (__         | || (_| || (__         | || (_) ||  __/ #\n");
+  printf("#    | |   | || (__         | || (_| || (__         | || (_) | |  __/ #\n");
   printf("#    |_|   |_| \\___|        |_| \\__,_| \\___|        |_| \\___/  \\___/ #\n");
   printf("######################################################################\n");
   printf("#              Welcome to a simple game of Tic-Tac-Toe!              #\n");
@@ -260,7 +266,7 @@ void print_title()
   printf("######################################################################\n");
 }
 
-void get_input(char * input, int maxLength)
+static void get_console_input(char * input, int maxLength)
 /* Gets input from console */
 {
   int c;
@@ -270,18 +276,15 @@ void get_input(char * input, int maxLength)
   input[strcspn(input, "\r\n")] = 0;
   /* if input exceeds max length, erase remaining input
      console input requires ENTER, so if not found, input was too long */
-  if (c == strlen(input))
-  {
-    while ((c = getchar()) != '\n' && c != EOF);
-  }
+  if (c == strlen(input)) { while ((c = getchar()) != '\n' && c != EOF); }
 }
 
-int replay()
+static int replay()
 /* return 1 to replay, 0 to exit */
 {
   char * tempS = malloc(10);
   printf(" <Computer> \"Play again?\" YES / NO: ");
-  get_input(tempS, 5);
+  get_console_input(tempS, 5);
   if (tempS[0] == 'Y' || tempS[0] == 'y')
   {
     free(tempS);
@@ -293,8 +296,128 @@ int replay()
   return 0;
 }
 
-void init(char * playerName)
+static char check_two_h(char * grid, char player)
+/* returns location to play if player has 2 in a row horizontally, else 77 */
 {
-  print_title();
-  get_name(playerName);
+  char line[3];
+  char i, j, k;
+  for (i = 0; i < 3; i++)
+  {
+    line[0] = grid[i * 3];
+    line[1] = grid[i * 3 + 1];
+    line[2] = grid[i * 3 + 2];
+    j = 0;
+    for (k = 0; k < 3; k++) { if (line[k] == player) { j++; } }
+    if (j > 1)
+    {
+      for (k = 0; k < 3; k++)
+      {
+        if (line[k] == '-')
+        {
+          return (i * 3 + k);
+        }
+      }
+    }
+  }
+  return 77;
+}
+
+static char check_two_v(char * grid, char player)
+/* returns location to play if player has two in a row vertically, else 77 */
+{
+  char line[3];
+  char i, j, k;
+  for (i = 0; i < 3; i++)
+  {
+    line[0] = grid[i];
+    line[1] = grid[i + 3];
+    line[2] = grid[i + 6];
+    j = 0;
+    for (k = 0; k < 3; k++) { if (line[k] == player) { j++; } }
+    if (j > 1)
+    {
+      for (k = 0; k < 3; k++)
+      {
+        if (line[k] == '-')
+        {
+          return (i + (3 * k));
+        }
+      }
+    }
+  }
+  return 77;
+}
+
+static char check_two_d(char * grid, char player)
+/* returns location to play if player has two in a row diagonally, else 77 */
+{
+  if (grid[4] == player)
+  {
+    if (grid[0] == player)
+    {
+      return 8;
+    }
+    else if (grid[2] == player)
+    {
+      return 6;
+    }
+    else if (grid[6] == player)
+    {
+      return 2;
+    }
+    else if (grid[8] == player)
+    {
+      return 0;
+    }
+  }
+  return 77;
+}
+
+static char robo_brain(char * grid)
+/* decides where computer will place it's mark */
+{
+  /* check if computer can win this move */
+  char move;
+  int i;
+  move = check_two_d(grid, 'O'); if (move != 77 && grid[move] == '-') { return move; }
+  move = check_two_h(grid, 'O'); if (move != 77 && grid[move] == '-') { return move; }
+  move = check_two_v(grid, 'O'); if (move != 77 && grid[move] == '-') { return move; }
+  /* check if player has two in a row */
+  move = check_two_d(grid, 'X'); if (move != 77 && grid[move] == '-') { return move; }
+  move = check_two_h(grid, 'X'); if (move != 77 && grid[move] == '-') { return move; }
+  move = check_two_v(grid, 'X'); if (move != 77 && grid[move] == '-') { return move; }
+  /* checks if diags are avaliable */
+  if (grid[0] == '-' || grid[2] == '-' || grid[6] == '-' || grid[8] == '-')
+  {
+    while(1)
+    {
+      i = rand() % 4;
+      switch (i)
+      {
+        case 0: move = 0; break;
+        case 1: move = 2; break;
+        case 2: move = 6; break;
+        case 3: move = 8; break;
+      }
+      if (grid[move] == '-') { return move; }
+    }
+  }
+  /* picks middle if open */
+  if (grid[4] == '-') { return 4; }
+  /* picks a mid as last choice */
+  if (move == 77)
+  {
+    while(1)
+    {
+      i = rand() % 4;
+      switch (i)
+      {
+        case 0: move = 1; break;
+        case 1: move = 3; break;
+        case 2: move = 5; break;
+        case 3: move = 7; break;
+      }
+      if (grid[move] == '-') { return move; }
+    }
+  }
 }
