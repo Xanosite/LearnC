@@ -17,7 +17,6 @@ static void print_grid(char * tGrid);
 static void get_name(char * playerName);
 static char check_win(char * grid);
 static char turn_changer(char * lastTurn);
-static void computer_turn(char * grid);
 static void player_turn(char * grid, char * playerName);
 static void game_end(char winState, char * playerName);
 static void print_title();
@@ -65,7 +64,7 @@ static void game_engine(char * playerName)
     turn = turn_changer(&lastTurn);
     if (turn == 1)
     {
-      computer_turn(grid);
+      grid[robo_brain(grid)] = 'O';
     }
     else
     {
@@ -173,26 +172,6 @@ static char turn_changer(char * lastTurn)
     *lastTurn = 0;
     return 0;
   }
-}
-
-static void computer_turn(char * grid)
-/*picks a random spot to mark...for now*/
-{
-  char test;
-  /*int i;
-  while(1)
-  {
-    i = rand() % 9;
-    if (grid[i] == '-')
-    {
-      grid[i] = 'O';
-      printf("\n <Computer> \"I picked %d, your turn.\"\n", i+1);
-      break;
-    }
-  }*/
-  test = robo_brain(grid);
-  printf("%d\n", test);
-  grid[test] = 'O';
 }
 
 static void player_turn(char * grid, char * playerName)
