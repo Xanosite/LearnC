@@ -1,12 +1,11 @@
 /*
 Plays a single game of Tic-Tac-Toe
 Computer does not have any reasoning, just random
-only plays once, repeat issue found with fgets
+
 BUGS:
-- fgets() is skipped when played again
+
 
 TO DO:
-- Add replayability
 - Make better UI
 - Add heuristic algo to computer moves
 */
@@ -16,7 +15,7 @@ TO DO:
 #include <time.h>
 
 void print_grid(char * tGrid);
-void get_name(char * namePoint);
+void get_name(char * playerName);
 char check_win(char * grid);
 char turn_changer(char * lastTurn);
 void computer_turn(char * grid);
@@ -24,17 +23,30 @@ void player_turn(char * grid, char * playerName);
 void game_end(char winState, char * playerName);
 void print_title();
 void get_input(char * input, int maxLength);
+void game_engine(char * playerName);
+int replay();
+void init(char * playerName);
 
 int main()
 {
-  print_title();
   char * playerName = malloc(60);
+  init(playerName);
+  do
+  {
+    game_engine(playerName);
+  } while (replay() == 1);
+  free(playerName);
+  return 0;
+}
+
+void game_engine(char * playerName)
+/* runs the actual ggame */
+{
   char * grid = malloc(15);
   strcpy(grid, "---------");
   char turn = 2;
   char lastTurn = 2;
   char winState = 0;
-  get_name(playerName);
   /*Generates seed for rand() based on time*/
   srand(time(0));
   /* main engine */
@@ -45,7 +57,6 @@ int main()
     {
       print_grid(grid);
       game_end(winState, playerName);
-      free(playerName);
       free(grid);
       break;
     }
@@ -60,14 +71,14 @@ int main()
       player_turn(grid, playerName);
     }
   }
-  return 0;
+  free(grid);
 }
 
 void print_grid(char * tGrid)
 /*prints the play grid to console*/
 {
   printf("\n#########################################\n\n");
-  printf("         1    ##    2    ##    3    \n");
+  printf("         7    ##    8    ##    9    \n");
   printf("              ##         ##         \n");
   printf("         %c    ##    %c    ##    %c    \n", tGrid[0], tGrid[1], tGrid[2]);
   printf("              ##         ##         \n");
@@ -79,7 +90,7 @@ void print_grid(char * tGrid)
   printf("              ##         ##         \n");
   printf("              ##         ##         \n");
   printf("     ###############################\n");
-  printf("         7    ##    8    ##    9    \n");
+  printf("         1    ##    2    ##    3    \n");
   printf("              ##         ##         \n");
   printf("         %c    ##    %c    ##    %c    \n", tGrid[6], tGrid[7], tGrid[8]);
   printf("              ##         ##         \n");
@@ -87,12 +98,12 @@ void print_grid(char * tGrid)
   printf("#########################################\n");
 }
 
-void get_name(char * namePoint)
+void get_name(char * playerName)
 /*takes inout for player name*/
 {
   printf("\n <Player Name>: ");
-  get_input(namePoint, 50);
-  printf(" <Computer> \"%s is it? I'll keep that in mind when you lose.\"\n", namePoint);
+  get_input(playerName, 50);
+  printf(" <Computer> \"%s is it? I'll keep that in mind when you lose.\"\n", playerName);
 }
 
 char check_win(char * grid)
@@ -191,6 +202,16 @@ void player_turn(char * grid, char * playerName)
     i = tempS[0] - '0';
     free(tempS);
     i--;
+    /* swap positions around to match keypad */
+    switch (i)
+    {
+      case 6: i = 0; break;
+      case 7: i = 1; break;
+      case 8: i = 2; break;
+      case 0: i = 6; break;
+      case 1: i = 7; break;
+      case 2: i = 8; break;
+    }
     if (grid[i] != '-')
     {
       printf(" <Computer> \"You're not the brightest bulb, are you?\"\n");
@@ -219,7 +240,7 @@ void game_end(char winState, char *  playerName)
   {
     printf(" <Computer> \"I won this game %s\"\n", playerName);
   }
-  printf(" <Computer> \"Will I beat you next time?\"");
+  printf(" <Computer> \"Will I beat you next time?\"\n");
 }
 
 void print_title()
@@ -253,4 +274,27 @@ void get_input(char * input, int maxLength)
   {
     while ((c = getchar()) != '\n' && c != EOF);
   }
+}
+
+int replay()
+/* return 1 to replay, 0 to exit */
+{
+  char * tempS = malloc(10);
+  printf(" <Computer> \"Play again?\" YES / NO: ");
+  get_input(tempS, 5);
+  if (tempS[0] == 'Y' || tempS[0] == 'y')
+  {
+    free(tempS);
+    printf("\n\n\n\n\n\n");
+    print_title();
+    return 1;
+  }
+  free(tempS);
+  return 0;
+}
+
+void init(char * playerName)
+{
+  print_title();
+  get_name(playerName);
 }
