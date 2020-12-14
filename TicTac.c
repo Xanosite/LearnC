@@ -27,6 +27,8 @@ static char check_two_h(char * grid, char player);
 static char check_two_v(char * grid, char player);
 static char check_two_d(char * grid, char player);
 static char robo_brain(char * grid);
+static void clear_screen();
+
 int main()
 {
   char * playerName = malloc(60);
@@ -56,6 +58,7 @@ static void game_engine(char * playerName)
     winState = check_win(grid);
     if (winState != 0)
     {
+      clear_screen();
       print_grid(grid);
       game_end(winState, playerName);
       free(grid);
@@ -64,10 +67,12 @@ static void game_engine(char * playerName)
     turn = turn_changer(&lastTurn);
     if (turn == 1)
     {
+      clear_screen();
       grid[robo_brain(grid)] = 'O';
     }
     else
     {
+      clear_screen();
       print_grid(grid);
       player_turn(grid, playerName);
     }
@@ -399,4 +404,10 @@ static char robo_brain(char * grid)
       if (grid[move] == '-') { return move; }
     }
   }
+}
+
+static void clear_screen()
+{
+  system("cls");
+  print_title();
 }
