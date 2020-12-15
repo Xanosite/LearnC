@@ -17,3 +17,6 @@ static void get_console_input(char * input, int maxLength)
     while ((c = getchar()) != '\n' && c != EOF);
   }
 }
+
+/* clears the console */
+system("cls");
