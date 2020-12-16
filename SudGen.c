@@ -2,8 +2,12 @@
 #include <stdlib.h>
 #include <time.h>
 
+static char get_legal_numbers(char * sudukoGrid, char location, char * validNumbers);
+static char number_legal_check( char * sudukoGrid, char location, char number);
+static void valid_numbers_arr_handler(char * validNumbers, char newNumber);
 
-static char number_placement_check( char * sudukoGrid, char number, char location);
+static void test_handler(char * sudukoGrid);
+static char test_number_legal_check();
 
 /*
     Grid Format:
@@ -28,25 +32,159 @@ int main(void)
 {
   char * sudukoGrid = calloc(81, sizeof(char));
   srand(time(0));
+  test_handler(sudukoGrid);
+  return 0;
 }
 
-static char number_placement_check(char * sudukoGrid, char number, char location)
+/* begin test function area */
+
+static void test_handler(char * sudukoGrid)
+{
+  printf("Testing number_legal_check: ");
+  if (test_number_legal_check() == 1)
+  {
+    printf("Passed\n");
+  }
+}
+
+static char test_number_legal_check()
+/*
+  tests 5 random spots with good assignemnt of numbers
+  tests 5 random spots with bad assignemnt of numbers
+*/
+{
+  char * testSudukoGrid = calloc(81, sizeof(char));
+  char location;
+  char number;
+  /* test iterator */
+  char t;
+  /* number iterator (1-9) */
+  char i;
+  /* location iterator */
+  char j;
+  char columnModifier;
+  char rowModifier;
+  for (t = 0; t < 5; t++)
+  {
+    /* gets a random location and number to test with */
+    location = rand() % 81;
+    number = (rand() % 9) + 1;
+    columnModifier = location % 9;
+    rowModifier = location - (location % 9);
+    /* fills in the vertical & horizontal portions of the grid */
+    for (i = 1; i < 10; i++)
+    {
+      if (i == number) { continue; }
+      for (j = 0; j < 9; j++)
+      {
+        /* assign vertical if empty and not the location to be tested */
+        if (testSudukoGrid[(j * 9) + columnModifier] == 0 && (j * 9) + columnModifier != location)
+        {
+          testSudukoGrid[(j * 9) + columnModifier] = i;
+          break;
+        }
+      }
+      for (j = 0; j < 9; j++)\
+      {
+        /* assign horizontal if empty and not the location to be tested  */
+        if (testSudukoGrid[rowModifier + j] == 0 && rowModifier + j != location)
+        {
+          testSudukoGrid[rowModifier + j] = i;
+          break;
+        }
+      }
+    }
+    if (number_legal_check(testSudukoGrid, location, number) != 1)
+    {
+      printf("\nError: test_number_legal_check caused fail state with data:\n");
+      printf("Number: %d\nLocation: %d", number, location);
+      printf("Horizontal data:");
+      for (i = 0; i < 9; i++)
+      {
+        printf("%2d : %d", (rowModifier + i), testSudukoGrid[rowModifier + i]);
+      }
+      printf("\nVertical Data:");
+      for (i = 0; i < 9; i++)
+      {
+        printf("%2d: %d", ((i * 9) + columnModifier), testSudukoGrid[(i * 9) + columnModifier]);
+      }
+      return 0;
+    }
+    number = (number == 9) ? number -1: number + 1;
+    if (number_legal_check(testSudukoGrid, location, number) == 1)
+    {
+      printf("\nError: test_number_legal_check caused false correct state with data:\n");
+      printf("Number: %d\nLocation: %d\n", number, location);
+      printf("Horizontal data: ");
+      for (i = 0; i < 9; i++)
+      {
+        printf("%2d:%d ", (rowModifier + i), testSudukoGrid[rowModifier + i]);
+      }
+      printf("\nVertical Data:");
+      for (i = 0; i < 9; i++)
+      {
+        printf("%2d:%d ", ((i * 9) + columnModifier), testSudukoGrid[(i * 9) + columnModifier]);
+      }
+      return 0;
+    }
+    /* clear grid and data */
+    for (i == 0; i < 81; i++)
+    {
+      testSudukoGrid[i] = 0;
+    }
+    location = 0;
+    number = 0;
+    columnModifier = 0;
+    rowModifier = 0;
+  }
+  free(testSudukoGrid);
+  return 1;
+}
+
+/* end test function area */
+
+static char get_legal_numbers(char * sudukoGrid, char location, char * validNumbers)
+/* assigns any legal numbers to validNumbers 1-9 */
+{
+  char i;
+  validNumbers[0] = 0;
+  for (i = 1; i < 10; i++)
+  {
+    if (number_legal_check(sudukoGrid, location, i))
+    {
+      valid_numbers_arr_handler(validNumbers, i);
+    }
+  }
+  return validNumbers[0];
+}
+
+static char number_legal_check(char * sudukoGrid, char location, char number)
 /* returns 1 if there are no matches in the column or row, else, returns 0 */
 {
   char columnModifier = location % 9;
   char rowModifier = location - (location % 9);
   char i;
-  char clear = 2;
   for (i = 0; i < 9; i++)
   {
     if (sudukoGrid[(i * 9) + columnModifier] == number || sudukoGrid[rowModifier + i] == number)
     {
-      clear = 0;
-      i = 10;
-    } else
-    {
-      clear = 1;
+      return 0;
     }
   }
-  return clear;
+  return 1;
+}
+
+
+static void valid_numbers_arr_handler(char * validNumbers, char newNumber)
+{
+  char i;
+  validNumbers[0] = 1;
+  for (i = 1; i < 10; i++)
+  {
+    if (validNumbers[i] == 0)
+    {
+      validNumbers[i] = newNumber;
+      i = 10;
+    }
+  }
 }
