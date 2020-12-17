@@ -2,6 +2,19 @@
 #include <stdlib.h>
 #include <time.h>
 
+/*
+Notepad:
+- Add readout to test_number_legal_check()
+    I don't trust what I can't see after previous issues with this test function not populating the test grid
+    format it as:
+        Begin unit test of function "number_legal_check"
+        Pass with Number # in location ##
+        Fail with number # in location ##:
+            H ## ## ## ## ## ## ## ## ## : # # # # # # # # #
+            V ## ## ## ## ## ## ## ## ## : # # # # # # # # #
+        End unit test of "number_legal_check": Pass/Fail
+*/
+
 static char get_legal_numbers(char * sudukoGrid, char location, char * validNumbers);
 static char number_legal_check( char * sudukoGrid, char location, char number);
 static void valid_numbers_arr_handler(char * validNumbers, char newNumber);
