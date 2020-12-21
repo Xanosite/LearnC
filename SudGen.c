@@ -4,7 +4,11 @@
 
 /*
 Notepad:
-
+FINAL UPDATE:
+Algo is incapable of filling grid. I thought starting in the middle and moving out would be fillable in one go
+It is NOT,
+next version will have to be able to undo prior moves.
+Project END, Begin Mk.2
 */
 
 static char get_legal_numbers(char * sudukoGrid, char location, char * validNumbers);
@@ -15,6 +19,7 @@ static char pick_from_legal(char * validNumbers);
 static void generate_block(char * sudukoGrid, char blockIndex);
 static char get_single_number(char * sudukoGrid, char location);
 static void print_grid(char * sudukoGrid);
+static void generate_suduko_grid(char *sudukoGrid);
 
 static char test_handler(char printVar);
 static char test_number_legal_check(char printVar);
@@ -53,10 +58,11 @@ int main(void)
 {
   char * sudukoGrid = calloc(81, sizeof(char));
   srand(time(0));
-  if (test_handler(1) == 0)
+  if (test_handler(0) == 0)
   {
     return 1;
   }
+  generate_suduko_grid(sudukoGrid);
   return 0;
 }
 
@@ -72,7 +78,7 @@ static char test_handler(char printVar)
   if (test_valid_numbers_arr_handler(printVar) == 0) { allPassed = 0; }
   if (test_get_single_number(printVar) == 0) { allPassed = 0; }
   if (test_generate_block(printVar) == 0) { allPassed = 0; }
-  if (allPassed = 0) { printf("Unit test failure.\n"); }
+  if (allPassed == 0) { printf("Unit test failure.\n"); }
   return allPassed;
 }
 
@@ -450,7 +456,10 @@ static char test_generate_block(char printVar)
     printf("Begin unit test of function \"generate_block\":\n");
   }
   generate_block(testSudukoGrid, 0);\
-  print_grid(testSudukoGrid);
+  if (printVar)
+  {
+    print_grid(testSudukoGrid);
+  }
   for (i = 0; i < 3; i++)
   {
     for (j = 1; j< 10; j++)
@@ -611,4 +620,20 @@ static void print_grid(char * sudukoGrid)
       printf("===========================\n");
     }
   }
+}
+
+static void generate_suduko_grid(char *sudukoGrid)
+{
+  print_grid(sudukoGrid);
+  generate_block(sudukoGrid, 30);
+  print_grid(sudukoGrid);
+  generate_block(sudukoGrid, 57);
+  print_grid(sudukoGrid);
+  generate_block(sudukoGrid, 3);
+  generate_block(sudukoGrid, 33);
+  generate_block(sudukoGrid, 27);
+  generate_block(sudukoGrid, 0);
+  generate_block(sudukoGrid, 6);
+  generate_block(sudukoGrid, 54);
+  generate_block(sudukoGrid, 60);
 }
