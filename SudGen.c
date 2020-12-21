@@ -18,7 +18,7 @@ static char test_number_legal_check(char printVar);
 static char test_get_block_start(char printVar);
 static char test_get_legal_numbers(char printVar);
 static char test_pick_from_legal(char printVar);
-
+static char test_valid_numbers_arr_handler(char printVar);
 /*
     Grid Format:
     00 01 02 | 03 04 05 | 06 07 08
@@ -64,6 +64,7 @@ static char test_handler(char printVar)
   if (test_number_legal_check(printVar) == 0) { allPassed = 0; }
   if (test_get_legal_numbers(printVar) == 0) { allPassed = 0; }
   if (test_pick_from_legal(printVar) == 0) { allPassed = 0; }
+  if (test_valid_numbers_arr_handler(printVar) == 0) { allPassed = 0; }
   if (allPassed = 0) { printf("Unit test failure.\n"); }
   return allPassed;
 }
@@ -142,7 +143,7 @@ static char test_number_legal_check(char printVar)
   }
   if (printVar == 1)
   {
-    printf("End unit test of \"number_legal_check\".\n\n");
+    printf("End unit test of function \"number_legal_check\".\n\n");
   }
   free(testSudukoGrid);
   return pass;
@@ -316,6 +317,8 @@ static char test_get_legal_numbers(char printVar)
   {
     printf("End unit test of function \"get_legal_numbers\".\n\n");
   }
+  free(testSudukoGrid);
+  free(testArr);
   return pass;
 }
 
@@ -352,6 +355,40 @@ static char test_pick_from_legal(char printVar)
   {
     printf("End unit test of function \"pick_from_legal\".\n\n");
   }
+  free(testArr);
+  return pass;
+}
+
+static char test_valid_numbers_arr_handler(char printVar)
+{
+  char * testArr = calloc(11, sizeof(char));
+  char i;
+  char pass = 1;
+  if (printVar)
+  {
+    printf("Begin unit test of function \"valid_numbers_arr_handler\":\n");
+  }
+  for (i = 1; i < 10; i++)
+  {
+    valid_numbers_arr_handler(testArr, i);
+    if (testArr[i] != i)
+    {
+      pass = 0;
+      if (printVar)
+      {
+        printf("Number to add: %d  Number added: %d  Result: Fail\n", i, testArr[i]);
+      }
+    }
+    else if (printVar)
+    {
+      printf("Number to add: %d  Number added: %d  Result: Pass\n", i, testArr[i]);
+    }
+  }
+  if (printVar)
+  {
+    printf("End unit test of function \"valid_numbers_arr_handler\".\n\n");
+  }
+  free(testArr);
   return pass;
 }
 
