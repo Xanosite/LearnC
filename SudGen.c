@@ -12,8 +12,9 @@ static char number_legal_check( char * sudukoGrid, char location, char number);
 static void valid_numbers_arr_handler(char * validNumbers, char newNumber);
 static char get_block_start(char location);
 static char pick_from_legal(char * validNumbers);
-static char generate_block(char * sudukoGrid, char blockIndex);
+static void generate_block(char * sudukoGrid, char blockIndex);
 static char get_single_number(char * sudukoGrid, char location);
+static void print_grid(char * sudukoGrid);
 
 static char test_handler(char printVar);
 static char test_number_legal_check(char printVar);
@@ -22,6 +23,7 @@ static char test_get_legal_numbers(char printVar);
 static char test_pick_from_legal(char printVar);
 static char test_valid_numbers_arr_handler(char printVar);
 static char test_get_single_number(char printVar);
+static char test_generate_block(char printVar);
 /*
     Grid Format:
     00 01 02 | 03 04 05 | 06 07 08
@@ -69,6 +71,7 @@ static char test_handler(char printVar)
   if (test_pick_from_legal(printVar) == 0) { allPassed = 0; }
   if (test_valid_numbers_arr_handler(printVar) == 0) { allPassed = 0; }
   if (test_get_single_number(printVar) == 0) { allPassed = 0; }
+  if (test_generate_block(printVar) == 0) { allPassed = 0; }
   if (allPassed = 0) { printf("Unit test failure.\n"); }
   return allPassed;
 }
@@ -429,6 +432,63 @@ static char test_get_single_number(char printVar)
       printf("Legal Number: 5  Return value %d  Result: Pass\n", ret);
     }
   }
+  if (printVar)
+  {
+    printf("End unit test of \"get_single_number\".\n\n");
+  }
+  free(testSudukoGrid);
+  return pass;
+}
+
+static char test_generate_block(char printVar)
+{
+  char i, j;
+  char pass = 1;
+  char * testSudukoGrid = calloc(81, sizeof(char));
+  if (printVar)
+  {
+    printf("Begin unit test of function \"generate_block\":\n");
+  }
+  generate_block(testSudukoGrid, 0);\
+  print_grid(testSudukoGrid);
+  for (i = 0; i < 3; i++)
+  {
+    for (j = 1; j< 10; j++)
+    {
+      if (number_legal_check(testSudukoGrid, (i * 9), j) || number_legal_check(testSudukoGrid,
+        (i * 9) + 1, j) || number_legal_check(testSudukoGrid, (i * 9) + 1, j))
+      {
+        pass = 0;
+        if (printVar)
+        {
+          printf("Legal number found: Test Fail.\n");
+        }
+      }
+    }
+  }
+  if (pass && printVar)
+  {
+    printf("No legal numbers found in block.  Result: Pass\n");
+  }
+  for (i = 0; i < 3; i++)
+  {
+    if (testSudukoGrid[i * 9] == 0 || testSudukoGrid[(i * 9) + 1] == 0 || testSudukoGrid[(i * 9) +2] == 0)
+    {
+      pass = 0;
+      if (printVar)
+      {
+        printf("Location not filled: Test Fail.\n");
+      }
+    }
+  }
+  if (pass && printVar)
+  {
+    printf("All locations in block filled.  Result: Pass\n");
+  }
+  if (printVar)
+  {
+    printf("End unit test of function \"generate_block\".\n");
+  }
   return pass;
 }
 
@@ -526,11 +586,29 @@ static char get_single_number(char * sudukoGrid, char location)
   return retVal;
 }
 
-static char generate_block(char * sudukoGrid, char blockIndex)
+static void generate_block(char * sudukoGrid, char blockIndex)
 {
   char i;
   for (i = 0; i < 3; i++)
   {
     sudukoGrid[blockIndex + (i * 9)] = get_single_number(sudukoGrid, (blockIndex + (i * 9)));
+    sudukoGrid[blockIndex + (i * 9) + 1] = get_single_number(sudukoGrid, (blockIndex + (i * 9)));
+    sudukoGrid[blockIndex + (i * 9) + 2] = get_single_number(sudukoGrid, (blockIndex + (i * 9)));
+  }
+}
+
+static void print_grid(char * sudukoGrid)
+{
+  char i;
+  for (i = 0; i < 9; i++)
+  {
+    printf("%d %d %d  ##  ", sudukoGrid[(i * 9)], sudukoGrid[((i * 9) + 1)], sudukoGrid[((i * 9) + 2)]);
+    printf("%d %d %d  ##  ", sudukoGrid[((i * 9) + 3)], sudukoGrid[((i * 9) + 4)], sudukoGrid[((i * 9) + 5)]);
+    printf("%d %d %d\n", sudukoGrid[((i * 9) + 6)], sudukoGrid[((i * 9) + 7)], sudukoGrid[((i * 9) + 8)]);
+    if (i == 2 || i == 5)
+    {
+      printf("===========================\n");
+      printf("===========================\n");
+    }
   }
 }
